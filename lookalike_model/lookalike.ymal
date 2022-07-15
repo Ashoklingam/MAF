@@ -1,0 +1,170 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rs-premiumauto-lookalike-config
+  namespace: default
+  labels:
+    app: rs-premiumauto-lookalike-app
+data:
+  BUSINESS_CLIENT: premiumauto
+  MODEL_EMBEDDING_SIZE: "128"
+  MODEL_SPARSE: "True"
+  CLOUD_STORAGE_BUCKET: footprintsforretail-app-mlengine
+  DB_NAME: premiumauto
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rs-premiumauto-lookalike-service
+  labels:
+    app: rs-premiumauto-lookalike-app
+spec:
+  type: NodePort
+  selector:
+    app: rs-premiumauto-lookalike-app
+  ports:
+  - port: 80
+    targetPort: 5000
+    protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rs-premiumauto-lookalike-app
+  namespace: default
+  labels:
+    app: rs-premiumauto-lookalike-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rs-premiumauto-lookalike-app
+  template:
+    metadata:
+      labels:
+        app: rs-premiumauto-lookalike-app
+    spec:
+      containers:
+      - name: rs-serving-lookalike
+        image: footprintsforretailapp.azurecr.io/lookalike_audience:1.0.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 27017
+            protocol: TCP
+        env:
+          - name: DB_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongo-uri-lookalike
+                key: db-uri
+          - name: BUSINESS_CLIENT
+            valueFrom:
+              configMapKeyRef:
+                key: BUSINESS_CLIENT
+                name: rs-premiumauto-lookalike-config
+          - name: MODEL_EMBEDDING_SIZE
+            valueFrom:
+              configMapKeyRef:
+                key: MODEL_EMBEDDING_SIZE
+                name: rs-premiumauto-lookalike-config
+          - name: MODEL_SPARSE
+            valueFrom:
+              configMapKeyRef:
+                key: MODEL_SPARSE
+                name: rs-premiumauto-lookalike-config
+          - name: CLOUD_STORAGE_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                key: CLOUD_STORAGE_BUCKET
+                name: rs-premiumauto-lookalike-config
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: DB_NAME
+                name: rs-premiumauto-lookalike-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rs-nepirockcastle-lookalike-config
+  namespace: default
+  labels:
+    app: rs-nepirockcastle-lookalike-app
+data:
+  BUSINESS_CLIENT: nepirockcastle
+  MODEL_EMBEDDING_SIZE: "128"
+  MODEL_SPARSE: "True"
+  CLOUD_STORAGE_BUCKET: footprintsforretail-app-mlengine
+  DB_NAME: nepirockcastle
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rs-nepirockcastle-lookalike-service
+  labels:
+    app: rs-nepirockcastle-lookalike-app
+spec:
+  type: NodePort
+  selector:
+    app: rs-nepirockcastle-lookalike-app
+  ports:
+  - port: 80
+    targetPort: 5000
+    protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rs-nepirockcastle-lookalike-app
+  namespace: default
+  labels:
+    app: rs-nepirockcastle-lookalike-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rs-nepirockcastle-lookalike-app
+  template:
+    metadata:
+      labels:
+        app: rs-nepirockcastle-lookalike-app
+    spec:
+      containers:
+      - name: rs-serving-lookalike
+        image: footprintsforretailapp.azurecr.io/lookalike_audience:1.0.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 27017
+            protocol: TCP
+        env:
+          - name: DB_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongo-uri-nepirockcastle
+                key: db-uri
+          - name: BUSINESS_CLIENT
+            valueFrom:
+              configMapKeyRef:
+                key: BUSINESS_CLIENT
+                name: rs-nepirockcastle-lookalike-config
+          - name: MODEL_EMBEDDING_SIZE
+            valueFrom:
+              configMapKeyRef:
+                key: MODEL_EMBEDDING_SIZE
+                name: rs-nepirockcastle-lookalike-config
+          - name: MODEL_SPARSE
+            valueFrom:
+              configMapKeyRef:
+                key: MODEL_SPARSE
+                name: rs-nepirockcastle-lookalike-config
+          - name: CLOUD_STORAGE_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                key: CLOUD_STORAGE_BUCKET
+                name: rs-nepirockcastle-lookalike-config
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: DB_NAME
+                name: rs-nepirockcastle-lookalike-config
